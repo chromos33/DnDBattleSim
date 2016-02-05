@@ -39,28 +39,33 @@ namespace DnDBattleSim.Classes
         {
             return position;
         }
-        public Point MoveTo(Point _goal)
+        public Tuple<Point,double> MoveTo(Point _goal,TextBox start,TextBox goal,ListBox steps)
         {
-            Console.WriteLine("Start X: " + position.X + " Y: " + position.Y);
-
-            Point goalpoint = new Point(-10000, -10000);
-            while (!_goal.isAdjacent(goalpoint))
+            double length = 0;
+            start.Text = position.X + " / " + position.Y;
+            goal.Text = _goal.X + " / " + _goal.Y;
+            Tuple<Point, double> goalpoint = new Tuple<Point,double>(new Point(-10000, -10000),0);
+            Point currentPosition = position;
+            while (!_goal.isAdjacent(goalpoint.Item1))
             {
-                goalpoint = Move(_goal, goalpoint);
-                MessageBox.Show("X: " + goalpoint.X + " Y: " + goalpoint.Y);
-                MessageBox.Show(_goal.isAdjacent(goalpoint).ToString());
+                string step = currentPosition.X + " / " + currentPosition.Y + " -> ";
+                goalpoint = Move(_goal, currentPosition, goalpoint.Item1);
+                step += goalpoint.Item1.X + " / " + goalpoint.Item1.Y;
+                steps.Items.Add(step);
+                length += goalpoint.Item2;
+                currentPosition = goalpoint.Item1;
             }
-            Console.WriteLine("X: " + _goal.X + " Y: " + _goal.Y);
-            return goalpoint;
+            return new Tuple<Point,double>(goalpoint.Item1, length);
         }
-        private Point Move(Point _goal, Point oldpoint = null)
+        private Tuple<Point, double> Move(Point _goal, Point currentPos, Point oldpoint = null)
         {
+            double length = 0;
             List<Point> MovementPoints = new List<Point>();
             for (int i = -1; i <= 1; i++)
             {
                 for (int j = -1; j <= 1; j++)
                 {
-                    MovementPoints.Add(new Point(position.X - i, position.Y - j));
+                    MovementPoints.Add(new Point(currentPos.X - i, currentPos.Y - j));
                 }
             }
             List<Point> possibleMovementPoints = new List<Point>();
@@ -93,7 +98,6 @@ namespace DnDBattleSim.Classes
                 {
                     if (movepoint.Distance(_goal) < nextmove.Distance(_goal))
                     {
-
                         nextmove = movepoint;
                     }
                 }
@@ -102,7 +106,8 @@ namespace DnDBattleSim.Classes
                     nextmove = movepoint;
                 }
             }
-            return nextmove;
+            length = currentPos.Distance(nextmove);
+            return new Tuple<Point, double>(nextmove, length);
         }
 
     }

@@ -21,36 +21,36 @@ namespace DnDBattleSim.Classes
             switch (configurement)
             {
                 default:
-                    for (int i = 0; i <= 10; i++)
+                    for (int i = 0; i < 10; i++)
                     {
-                        for (int j = 0; j <= 10; j++)
+                        for (int j = 0; j < 10; j++)
                         {
                             MapConfig.Add(new Point(i, j));
                         }
                     }
                     break;
                 case 1:
-                    for (int i = 0; i <= 2; i++)
+                    for (int i = 0; i < 2; i++)
                     {
-                        for (int j = 0; j <= 20; j++)
+                        for (int j = 0; j < 20; j++)
                         {
                             MapConfig.Add(new Point(i, j));
                         }
                     }
                     break;
                 case 2:
-                    for (int i = 0; i <= 1; i++)
+                    for (int i = 0; i < 1; i++)
                     {
-                        for (int j = 0; j <= 20; j++)
+                        for (int j = 0; j < 20; j++)
                         {
                             MapConfig.Add(new Point(i, j));
                         }
                     }
                     break;
                 case 3:
-                    for (int i = 0; i <= 10; i++)
+                    for (int i = 0; i < 10; i++)
                     {
-                        for (int j = 0; j <= 10; j++)
+                        for (int j = 0; j < 10; j++)
                         {
                             if (i == 5 || i == 5)
                             {
