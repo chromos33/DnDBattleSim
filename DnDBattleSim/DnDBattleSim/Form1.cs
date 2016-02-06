@@ -20,13 +20,19 @@ namespace DnDBattleSim
             Random randomizer = new Random();
 
 
-            BattleField Battlefield = new BattleField(randomizer);
+            BattleField Battlefield = new BattleField(randomizer,4);
             Character ally = new Character();
+            ally.Name = "ally";
+            Character ally2 = new Character();
+            ally.Name = "ally";
+            Character ally3 = new Character();
             ally.Name = "ally";
             Character enemy = new Character();
             enemy.Name = "enemy";
-            Battlefield.addCharacter(ally);
-            Battlefield.addCharacter(enemy);
+            Battlefield.addCharacter(ally,3,2);
+            //Battlefield.addCharacter(ally2, 6, 4);
+            //Battlefield.addCharacter(ally3, 6, 5);
+            Battlefield.addCharacter(enemy,1,3);
             string msg = "";
             foreach (Character chara in Battlefield.getCharacters())
             {

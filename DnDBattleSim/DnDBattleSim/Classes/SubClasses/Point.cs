@@ -40,7 +40,10 @@ namespace DnDBattleSim.Classes.SubClasses
         }
         public bool isAdjacent(Point _goal)
         {
-
+            if(_goal == null)
+            {
+                return false;
+            }
             for (int i = -1; i <= 1; i++)
             {
                 for (int j = -1; j <= 1; j++)
