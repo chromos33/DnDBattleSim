@@ -38,8 +38,7 @@ namespace DnDBattleSim
             {
                 msg += chara.Name + " x: " + chara.getPoint().X + " y:" + chara.getPoint().Y + System.Environment.NewLine;
             }
-            Tuple<DnDBattleSim.Classes.SubClasses.Point, double> resultmove = ally.MoveTo(enemy.getPoint(),start,goal,StepList);
-            MessageBox.Show(resultmove.Item2 *5+" feet");
+            DnDBattleSim.Classes.SubClasses.Point resultmove = ally.MoveTo(enemy.getPoint());
         }
 
         private void goal_TextChanged(object sender, EventArgs e)

@@ -39,90 +39,82 @@ namespace DnDBattleSim.Classes
         {
             return position;
         }
-        public Tuple<Point,double> MoveTo(Point _goal,TextBox start,TextBox goal,ListBox steps)
+        public Point MoveTo(Point _goal,bool goAdjacent = true)
         {
-            //NoPath Detection Missing TODO: Think of a way to detect this
-            //Full Path Solution save every step and dissallow all steps that have been taken
-            //if no more fields can be tread on then take the position with the lowest distance and the steps taken to get there as the new position (recalculate distance)
-            // Bonus program a way to read all steps and remove the steps that have the higher distance between 2 points like if char moved from
-            // (0,0) -> (0,1) ->
-            //TODO:when character Class is fleshed out with at least movement don't move further than that distance
             
             double length = 0;
-            start.Text = position.X + " / " + position.Y;
-            goal.Text = _goal.X + " / " + _goal.Y;
-            Tuple<Point, double> goalpoint = new Tuple<Point,double>(new Point(-10000, -10000),0);
-            List<Point> TestedPath = new List<Point>();
-            List<Point> FinalMovePath = new List<Point>();
-            Point currentPosition = position;
-            bool NoPathPossible = false;
-            while (!NoPathPossible && !_goal.isAdjacent(goalpoint.Item1))
+            Point goalpoint = new Point(-10000, -10000);
+            List<List<Point>> ForbiddenPaths = new List<List<Point>>();
+            List<Point> CurrentPath = new List<Point>();
+            CurrentPath.Add(position);
+            while((goalpoint.isAdjacent(_goal) && goAdjacent) || (goalpoint.isOnField(_goal) && !goAdjacent))
             {
-                goalpoint = Move(_goal, currentPosition, TestedPath);
-                if(goalpoint.Item1 != null)
+                goalpoint = Move(_goal, CurrentPath, ForbiddenPaths);
+                CurrentPath.Add(goalpoint);
+                //if there actually can be a shorter path (more than 2 fields traversed
+                if(CurrentPath.Count() > 2)
                 {
-                    TestedPath.Add(goalpoint.Item1);
-                    length += goalpoint.Item2;
-                    currentPosition = goalpoint.Item1;
-                }
-                else
-                {
-                    List<Point> revertedList = TestedPath;
-                    revertedList.Reverse();
-                    Point temptarget = null;
-                    foreach(Point lastposition in revertedList)
+                    List<Point> TempPath = new List<Point>();
+                    TempPath.Add(position);
+                    Point tempgoalpoint = CurrentPath.Last();
+                    while(TempPath.Last().X != tempgoalpoint.X && TempPath.Last().Y != tempgoalpoint.Y)
                     {
-                        if(hasMoveableAdjacent(TestedPath,lastposition, currentPosition))
-                        {
-                            temptarget = lastposition;
-                            break;
-                        }
+                        TempPath.Add(Move(tempgoalpoint, TempPath));
                     }
-                    if(temptarget != null)
+                    if(PathLength(TempPath)<PathLength(CurrentPath))
                     {
+                        ForbiddenPaths.Add(CurrentPath);
+                        CurrentPath = TempPath;
+                    }
+                }
+            }
 
-                    }
-                    else
-                    {
-                        Point newMoveToPoint = hasShortestDistance(TestedPath,_goal);
-                        NoPathPossible = true;
-                        currentPosition = position;
-                        steps.Items.Clear();
-                        while (!(newMoveToPoint.X == currentPosition.X && newMoveToPoint.Y == currentPosition.Y))
-                        {
-                            goalpoint = Move(_goal, currentPosition, FinalMovePath);
-                            length += goalpoint.Item2;
-                            currentPosition = goalpoint.Item1;
-                        }
-                    }
-                }
-                
-            }
-            string steptest = position.X+"/"+position.Y;
-            foreach(Point point in FinalMovePath)
-            {
-                steptest += "->"+ point.X + "/" + point.Y;
-                steps.Items.Add(steptest);
-                steptest = point.X + "/" + point.Y;
-            }
-            return new Tuple<Point,double>(goalpoint.Item1, length);
+
+                                    
+            return goalpoint;
         }
-        private Tuple<Point, double> Move(Point _goal, Point currentPos, List<Point> oldpoints = null)
+        private Point Move(Point _goal, List<Point> CurrentPath, List<List<Point>> ForbiddenPaths = null)
         {
-            double length = 0;
             List<Point> MovementPoints = new List<Point>();
             for (int i = -1; i <= 1; i++)
             {
                 for (int j = -1; j <= 1; j++)
                 {
-                    MovementPoints.Add(new Point(currentPos.X - i, currentPos.Y - j));
+                    MovementPoints.Add(new Point(CurrentPath.Last().X - i, CurrentPath.Last().Y - j));
                 }
             }
             List<Point> possibleMovementPoints = new List<Point>();
             foreach (Point movepoint in MovementPoints)
             {
-                if (battlefield.isMovable(movepoint,currentPos))
+                if (battlefield.isMovable(movepoint, CurrentPath.Last()))
                 {
+                    if(ForbiddenPaths.Count() > 0)
+                    {
+                        List<List<Point>> ApplicableRules = new List<List<Point>>();
+                        foreach(List<Point> ForbiddenPath in ForbiddenPaths)
+                        {
+                            if(ForbiddenPath.Count() >= CurrentPath.Count())
+                            {
+                                ApplicableRules.Add(ForbiddenPath);
+                            }
+                        }
+                        foreach(List<Point> Rule in ApplicableRules)
+                        {
+                            for (int i = 0; i < CurrentPath.Count(); i++)
+                            {
+                                if (CurrentPath[i].X != Rule[i].X && CurrentPath[i].Y != Rule[i].Y)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        possibleMovementPoints.Add(movepoint);
+                    }
+
+                    /*
                     if (oldpoints != null)
                     {
                         IEnumerable<Point> movementpoints = oldpoints.Where(x => x.X == movepoint.X && x.Y == movepoint.Y);
@@ -138,7 +130,7 @@ namespace DnDBattleSim.Classes
                     else
                     {
                         possibleMovementPoints.Add(movepoint);
-                    }
+                    }*/
 
                 }
             }
@@ -159,12 +151,11 @@ namespace DnDBattleSim.Classes
                         nextmove = movepoint;
                     }
                 }
-                length = Math.Round(currentPos.Distance(nextmove)*2,MidpointRounding.AwayFromZero)/2;
-                return new Tuple<Point, double>(nextmove, length);
+                return nextmove;
             }
             else
             {
-                return new Tuple<Point, double>(null,0);
+                return null;
             }
             
         }
@@ -228,16 +219,14 @@ namespace DnDBattleSim.Classes
 
             return false;
         }
-        private Point hasShortestDistance(List<Point> _Points,Point _goal)
+        private double PathLength(List<Point> path)
         {
-            return _Points.Aggregate((c, d) => c.Distance(_goal) < d.Distance(_goal) ? c : d);
-        }
-        private List<Point> GenerateShortestPath(List<Point> longpath)
-        {
-            List<Point> resultPath = new List<Point>();
-
-
-            return resultPath;
+            double length = 0;
+            for (int i = 0; i+1 < path.Count(); i++)
+            {
+                length += path[i].Distance(path[i + 1],true);
+            }
+            return length;
         }
     }
 }

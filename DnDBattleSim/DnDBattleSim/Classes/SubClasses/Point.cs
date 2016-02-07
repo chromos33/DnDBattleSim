@@ -34,9 +34,14 @@ namespace DnDBattleSim.Classes.SubClasses
         {
             filled = !filled;
         }
-        public double Distance(Point _goal)
+        public double Distance(Point _goal,bool tonearest = false)
         {
-            return Math.Sqrt(Math.Pow(((double)_goal.X - (double)X), 2) + Math.Pow(((double)_goal.Y - (double)Y), 2));
+            double result = Math.Sqrt(Math.Pow(((double)_goal.X - (double)X), 2) + Math.Pow(((double)_goal.Y - (double)Y), 2));
+            if (tonearest)
+            {
+                result = (Math.Round(result * 2)) / 2;
+            }
+            return result;
         }
         public bool isAdjacent(Point _goal)
         {
@@ -56,5 +61,14 @@ namespace DnDBattleSim.Classes.SubClasses
             }
             return false;
         }
+        public bool isOnField(Point _goal)
+        {
+            if (_goal.X == X && _goal.Y == Y)
+            {
+                return true;
+            }
+            return false;
+        }
+
     }
 }
