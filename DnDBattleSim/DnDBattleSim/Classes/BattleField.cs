@@ -173,6 +173,10 @@ namespace DnDBattleSim.Classes
             if (mapconfigqueryresult.Count() > 0)
             {
                 result = true;
+                if(_point.isOnField(_origin))
+                {
+                    result = false;
+                }
                 if (isDiagonal(_point,_origin))
                 {
                     IEnumerable<Point> mapconfigquerydiagonalresult = MapConfig.Where(x => x.X == _point.X && x.Y == _origin.Y || x.X == _origin.X && x.Y == _point.Y);
@@ -189,8 +193,6 @@ namespace DnDBattleSim.Classes
                         result = false;
                     }
                 }
-                
-
             }
             return result;
         }
