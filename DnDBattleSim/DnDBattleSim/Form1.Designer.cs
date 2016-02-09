@@ -38,7 +38,7 @@
             this.StepList.FormattingEnabled = true;
             this.StepList.Location = new System.Drawing.Point(12, 50);
             this.StepList.Name = "StepList";
-            this.StepList.Size = new System.Drawing.Size(469, 186);
+            this.StepList.Size = new System.Drawing.Size(469, 433);
             this.StepList.TabIndex = 0;
             // 
             // start
@@ -60,7 +60,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(507, 261);
+            this.ClientSize = new System.Drawing.Size(507, 504);
             this.Controls.Add(this.goal);
             this.Controls.Add(this.start);
             this.Controls.Add(this.StepList);
