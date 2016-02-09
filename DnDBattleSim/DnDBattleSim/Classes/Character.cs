@@ -41,9 +41,7 @@ namespace DnDBattleSim.Classes
         }
         public List<Point> MoveTo(Point _goal, bool goAdjacent = true)
         {
-
             double length = 0;
-            Point goalpoint = new Point(-10000, -10000);
             List<List<Point>> ForbiddenPaths = new List<List<Point>>();
             List<Point> CurrentPath = new List<Point>();
             List<Point> ForbiddenPoints = new List<Point>();
@@ -59,8 +57,32 @@ namespace DnDBattleSim.Classes
                 {
                     TraveledPath.Add(currentmovepoint);
                 }
+                if(currentmovepoint == null)
+                {
+                    Point ShortestPathPoint = null;
+                    foreach(Point point in TraveledPath)
+                    {
+                        if(ShortestPathPoint == null)
+                        {
+                            ShortestPathPoint = point;
+                        }
+                        else
+                        {
+                            if(ShortestPathPoint.Distance(_goal)>point.Distance(_goal))
+                            {
+                                ShortestPathPoint = point;
+                            }
+                        }
+                    }
+                    _goal = ShortestPathPoint;
+                    CurrentPath = new List<Point>();
+                    CurrentPath.Add(position);
+                }
+                else
+                {
+                    CurrentPath.Add(currentmovepoint);
+                }
                 
-                CurrentPath.Add(currentmovepoint);
                 if((!CurrentPath.Last().isAdjacent(_goal) && goAdjacent) || (!CurrentPath.Last().isOnField(_goal) && !goAdjacent))
                 {
                     //if there actually can be a shorter path (more than 2 fields traversed
@@ -100,7 +122,6 @@ namespace DnDBattleSim.Classes
                                             {
                                                 ForbiddenPoints.Add(cpoint);
                                             }
-
                                         }
                                     }
                                 }
@@ -291,6 +312,7 @@ namespace DnDBattleSim.Classes
             }
             return possibleMovementPoints;
         }
+        // dont know if i ever gonna need this again.
         private List<Point> ReplaceSubPath(List<Point> ReplacementPath, List<Point> FullPath)
         {
             List<Point> ReturnPath = new List<Point>();

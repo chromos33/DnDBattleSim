@@ -29,10 +29,13 @@ namespace DnDBattleSim
             ally.Name = "ally";
             Character enemy = new Character();
             enemy.Name = "enemy";
+            
             Battlefield.addCharacter(ally,3,2);
             //Battlefield.addCharacter(ally2, 6, 4);
             //Battlefield.addCharacter(ally3, 6, 5);
             Battlefield.addCharacter(enemy,1,3);
+            goal.Text = enemy.getPoint().X + "/" + enemy.getPoint().Y;
+            start.Text = ally.getPoint().X + "/" + ally.getPoint().Y;
             string msg = "";
             foreach (Character chara in Battlefield.getCharacters())
             {
